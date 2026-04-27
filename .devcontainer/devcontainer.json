@@ -1,0 +1,31 @@
+{
+    "name": "Socket Server and Client",
+    "dockerFile": "Dockerfile", // Path to your Dockerfile
+    "runArgs": [
+      "--network=host"
+    ],
+    "remoteUser": "dhawal",
+    "customizations":{
+      "vscode": {
+        "extensions": [
+          "ms-vscode.cpptools", // C/C++ extension for VSCode
+          "ms-python.python",
+          "cschlosser.doxdocgen",
+          "jbenden.c-cpp-flylint",
+          "ms-vscode.makefile-tools"
+        ],
+        "settings": {
+          "terminal.integrated.shell.linux": "/bin/bash",
+          "notebook.file.autoSave": "afterDelay",
+          "notebook.file.autoSaveDelay": 1000
+        },
+        "storage-opts": [
+          "dm.basesize=60G"
+        ]
+      }
+    },
+    "postCreateCommand": "sudo chown -R dhawal:dhawal ."
+    // "runArgs": ["--user", "vscode", "--privileged"],
+    // "workspaceMount": "source=/workspace,destination=/workspace,type=bind,consistency=cached"
+  }
+

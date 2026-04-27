@@ -1,0 +1,103 @@
+{
+    "tasks": [
+        {
+            "label": "Run Program",
+            "type": "shell",
+            "command": "cd ${fileDirname}/build && ./${fileBasenameNoExtension} ",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "clear": true,
+                "showReuseMessage": false
+            },
+            "detail": "without any arguments passed"
+        },
+        {
+            "label": "Create a Build folder",
+            "type": "shell",
+            "command": "mkdir",
+            "args": [
+                "-p",
+                "build"
+            ],
+            "group": "build",
+            "options": {
+                "cwd": "${fileDirname}"
+            }
+        },
+        {
+            "label": "Build C File",
+            "type": "shell",
+            "command": "make",
+            "group": "build",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "detail": "Compile both socket server ad client codes"
+        },
+        {
+            "label": "Clean File",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "detail": "Compile both socket server ad client codes"
+        },
+        {
+            "label": "Start Socket Server",
+            "detail": "Starting Socket Server",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "command": "./server",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Start Socket Multi-Client Server",
+            "detail": "Starting Socket Multi-Client Server",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "command": "./server_multi_client",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Start Socket Client",
+            "detail": "Starting Socket Client",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "command": "./client",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Remove a Build folder",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "build"
+            ],
+            "group": "build",
+            "options": {
+                "cwd": "${fileDirname}"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
