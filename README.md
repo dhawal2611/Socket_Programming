@@ -1,7 +1,4 @@
 # Socket_Programming
-Socket multi client to server communication
-
-# Socket_Programming
 Socket client-server communication
 
 ---
