@@ -92,8 +92,6 @@ int iAcceptClientConnection(int *ipMSocketfd) {
 
     int activity, sd;
     int max_sd;
-    
-    fd_set readfds;
 
     socklen_t sAddrLen = sizeof(sAddress);
 
@@ -137,6 +135,15 @@ int iAcceptClientConnection(int *ipMSocketfd) {
         iClientPort = ntohs(sAddress.sin_port);
 
         printf("Connection accepted from %s:%d\n", cArrClientIP, iClientPort);
+
+        // Add new socket to array
+        for (int i = 0; i < MAX_CLIENTS; i++) {
+            if (iClientSockets[i] == 0) {
+                iClientSockets[i] = iNewSocket;
+                printf("Adding to list of sockets as %d\n", i);
+                break;
+            }
+        }
     }
 
     return iNewSocket;
@@ -154,7 +161,7 @@ uint8_t u8CommunicateWithClient(int *ipSocketServerFD) {
     ssize_t iReadCnt = INIT_0;
     char cBuffer[BUFFER_SIZE] = { INIT_0 };
     char* cpHello = "Hello from server";
-
+    socklen_t sAddrLen = sizeof(sAddress);
 
     while (1) {
         // Accept a connection from a client
@@ -163,52 +170,40 @@ uint8_t u8CommunicateWithClient(int *ipSocketServerFD) {
             return EXIT_FAILURE;
         }
 
-        // Add new socket to array
-        for (int i = 0; i < MAX_CLIENTS; i++) {
-            if (iClientSockets[i] == 0) {
-                iClientSockets[i] = iConnectedSocket;
-                printf("Adding to list of sockets as %d\n", i);
-                break;
-            }
-        }
-
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (iClientSockets[i] != 0) {
-                // subtract 1 for the null
-                // terminator at the end
-                memset(cBuffer, INIT_0, sizeof(cBuffer)); // Clear the buffer before reading
-                // iReadCnt = read(iConnectedSocket, cBuffer, BUFFER_SIZE - INIT_1);  // Used for blocking read
-                iReadCnt = recv(iClientSockets[i], cBuffer, BUFFER_SIZE - INIT_1, MSG_DONTWAIT); // Used for non-blocking read
-                if (iReadCnt < INIT_0) {
-                    if(errno == EWOULDBLOCK || errno == EAGAIN) {
-                        // No data available, continue to the next iteration
-                        continue;
-                    } else {
-                        perror("recv failed");
-                        goto RETURN_CLOSE_CONNECTION;
-                    }
-                } else if(iReadCnt == INIT_0) {
-                    close(iClientSockets[i]);
-
-                    printf("Client disconnected\n");
-                    printf("Waiting for new connection...\n");
-                    // Accept a connection from a client
-                    if ((iConnectedSocket = iAcceptClientConnection(ipSocketServerFD)) == FAILURE) {
-                        fprintf(stderr, "Failed to accept client connection\n");
-                        // closing the connected socket
+                if (FD_ISSET(iClientSockets[i], &readfds)) { 
+                    // subtract 1 for the null
+                    // terminator at the end
+                    memset(cBuffer, INIT_0, sizeof(cBuffer)); // Clear the buffer before reading
+                    iReadCnt = read(iClientSockets[i], cBuffer, BUFFER_SIZE - INIT_1);  // Used for blocking read
+                    // iReadCnt = recv(iClientSockets[i], cBuffer, BUFFER_SIZE - INIT_1, MSG_DONTWAIT); // Used for non-blocking read
+                    if (iReadCnt < INIT_0) {
+                        if(errno == EWOULDBLOCK || errno == EAGAIN) {
+                            // No data available, continue to the next iteration
+                            continue;
+                        } else {
+                            perror("recv failed");
+                            goto RETURN_CLOSE_CONNECTION;
+                        }
+                    } else if(iReadCnt == INIT_0) {
+                        // Somebody disconnected, get his details and print 
+                        getpeername(iClientSockets[i], (struct sockaddr*)&sAddress, (socklen_t*)&sAddrLen); 
+                        printf("Host disconnected, ip %s, port %d \n", inet_ntoa(sAddress.sin_addr), ntohs(sAddress.sin_port)); 
                         close(iClientSockets[i]);
-                        goto RETURN_CLOSE_CONNECTION;
+                        iClientSockets[i] = INIT_0;
+
+                        printf("Client disconnected\n");
+                        printf("Waiting for new connection...\n");
                     } else {
-                        continue;
+                        printf("%s\n", cBuffer);
                     }
-                } else {
-                    printf("%s\n", cBuffer);
+                    if(strcmp(cBuffer, "exitS") == INIT_0) {
+                        printf("Exit command received. Closing connection.\n");
+                        break;
+                    }
+                    send(iClientSockets[i], cpHello, strlen(cpHello), INIT_0);
                 }
-                if(strcmp(cBuffer, "exitS") == INIT_0) {
-                    printf("Exit command received. Closing connection.\n");
-                    break;
-                }
-                send(iClientSockets[i], cpHello, strlen(cpHello), INIT_0);
             }
         }
     }

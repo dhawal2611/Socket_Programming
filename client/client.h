@@ -18,7 +18,7 @@
 #include <string.h>
 
 // MACROS
-#define SERVER_IP "192.168.168.119"
+#define SERVER_IP "192.168.134.174"
 #define CLIENT_PORT 8080
 
 #define BUFFER_SIZE 1024

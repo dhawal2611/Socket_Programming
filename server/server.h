@@ -23,7 +23,7 @@
 
 // MACROS
 #define SERVER_PORT 8080
-#define SERVER_IP "192.168.168.119"
+#define SERVER_IP "192.168.134.174"
 
 #define BUFFER_SIZE 1024
 
@@ -45,6 +45,7 @@
 // Global Variables
 struct sockaddr_in sAddress;
 int iClientSockets[MAX_CLIENTS];
+fd_set readfds;
 
 // Function Declarations
 int iInitSocketServer(int *ipSocketfd);
