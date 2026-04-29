@@ -23,7 +23,7 @@
             ],
             "group": "build",
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             }
         },
         {
@@ -32,7 +32,7 @@
             "command": "make",
             "group": "build",
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "detail": "Compile both socket server ad client codes"
         },
@@ -45,7 +45,7 @@
             ],
             "group": "build",
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "detail": "Compile both socket server ad client codes"
         },
@@ -95,7 +95,7 @@
             ],
             "group": "build",
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             }
         }
     ],
