@@ -26,6 +26,63 @@ make clean
 
 ---
 
+## ⚙️ Configuration (Important)
+
+Before running the client and server, update the following based on your system:
+
+### 🔹 1. Update Server IP in Client
+
+Edit the file:
+
+```
+client/client.h
+```
+
+Update the server IP address:
+
+```c
+#define SERVER_IP "192.168.x.x"   // Replace with your server IP
+```
+
+👉 This ensures the client connects to the correct server.
+
+---
+
+### 🔹 2. Update Network Interface in Server
+
+Edit the file:
+
+```
+server/server.c
+```
+
+By default:
+
+```c
+char cInterfaceName[] = "enp1s0"; // Interface name
+```
+
+👉 Replace `"enp1s0"` with your system’s active network interface
+(e.g., `eth0`, `wlan0`, `ens33`).
+
+---
+
+### 🔍 How to Find Your Interface Name
+
+Run:
+
+```bash
+ip a
+```
+
+Look for active interfaces such as:
+
+* `eth0` (Ethernet)
+* `wlan0` (WiFi)
+* `enp1s0` (modern Linux naming)
+
+---
+
 ## ▶️ Run the Programs
 
 Navigate to build directory:
@@ -122,22 +179,18 @@ Located in:
 ### ▶️ How to Run in VS Code
 
 1. Open project in VS Code
-
 2. Reopen in DevContainer
 
    ```
    Ctrl + Shift + P → Dev Containers: Reopen in Container
    ```
-
 3. Run tasks:
 
    ```
    Ctrl + Shift + B
    ```
-
 4. Select task:
 
-   * Tasks: Run Task
    * Build C File
    * Start Socket Server / Client
 
@@ -145,22 +198,30 @@ Located in:
 
 ### ⚡ Example Workflow in VS Code
 
-1. **Create Build Folder**
-2. **Build C File**
-3. **Start Socket Server**
-4. **Start Socket Client**
+1. Create Build Folder
+2. Build C File
+3. Start Socket Server
+4. Start Socket Client
 
 ---
 
 ## 📌 Notes
 
 * Ensure ports used in server/client match
-* Server supports concurrent connections of multiple-clients
-* Uses standard Linux socket APIs (`socket`, `bind`, `listen`, `accept`, etc.)
+* Server supports concurrent connections of multiple clients
+* Uses standard Linux socket APIs:
+
+  * `socket()`
+  * `bind()`
+  * `listen()`
+  * `accept()`
+  * `connect()`
+  * `read()`
+  * `write()`
+  * `close()`
 
 ---
 
 ## 👨‍💻 Author
 
 Developed for learning and demonstration of Linux socket programming.
-

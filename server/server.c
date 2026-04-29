@@ -14,6 +14,46 @@
 #include "server.h"
 
 /**
+ * @brief Get the server IP address.
+ * @param cArrServerIP Buffer to store the server IP address.
+ * @param size Size of the buffer.
+ * @return 0 on success, -1 on failure.
+ * @note This function will get the server IP address.
+ */
+uint8_t u8GetServerIPAddress(char *cArrServerIP, size_t size) {
+    // Implementation for getting the server IP address
+    char cInterfaceName[] = "enp1s0"; // Interface name
+    struct ifreq sIfReq;
+    struct sockaddr_in *sAddrIn;
+    int iSocket = INIT_0;
+
+    iSocket = socket(AF_INET, SOCK_DGRAM, INIT_0);
+    if (iSocket < 0) {
+        perror("socket failed");
+        return FAILURE;
+    }
+    memset(&sIfReq, 0, sizeof(sIfReq));
+    strncpy(sIfReq.ifr_name, cInterfaceName, sizeof(sIfReq.ifr_name) - INIT_1);
+    if (ioctl(iSocket, SIOCGIFADDR, &sIfReq) < INIT_0) {
+        perror("ioctl failed");
+        close(iSocket);
+        return FAILURE;
+    }
+    close(iSocket);
+
+    // sprintf(cArrServerIP, "%s", inet_ntoa(((struct sockaddr_in *)&sIfReq.ifr_addr)->sin_addr));
+    //OR
+    sAddrIn = (struct sockaddr_in *)&sIfReq.ifr_addr;
+    if (inet_ntop(AF_INET, &sAddrIn->sin_addr, cArrServerIP, size) == NULL) {
+        perror("inet_ntop failed");
+        return FAILURE;
+    }
+    printf("Server IP address: %s\n", cArrServerIP);
+
+    return SUCCESS;
+}
+
+/**
  * @brief Initialize the socket server.
  * @param ipSocketfd 32-bit socket file descriptor pointer.
  * @return 0 on success, -1 on failure.
@@ -22,6 +62,7 @@
 int iInitSocketServer(int *ipSocketfd) {
     // Implementation for initializing the socket server
     int iOpt = INIT_0;
+    char cServerIP[64] = "127.0.0.1"; // IP address of the server
 
     // Create socket file descriptor
     *ipSocketfd = socket(PROTOCOL_FAMILY, SOCKET_TYPE, PROTOCOL);
@@ -41,10 +82,18 @@ int iInitSocketServer(int *ipSocketfd) {
     sAddress.sin_family = PROTOCOL_FAMILY;
     sAddress.sin_port = htons(SERVER_PORT);
     
+    // Get the IP address of the server
+    if(u8GetServerIPAddress(cServerIP, sizeof(cServerIP)) == FAILURE) {
+        fprintf(stderr, "Failed to get server IP address\n");
+        return FAILURE;
+    }
+
+    printf("Starting Socket on IP: %s\n", cServerIP);
     // sAddress.sin_addr.s_addr = INADDR_ANY;
     // OR
     // Convert string IP to binary format and assign to sin_addr
-    if (inet_pton(PROTOCOL_FAMILY, SERVER_IP, &sAddress.sin_addr) <= INIT_0) {
+    // if (inet_pton(PROTOCOL_FAMILY, SERVER_IP, &sAddress.sin_addr) <= INIT_0) { // --- IGNORE --- Start Server with hardcoded IP. Remove comment from header file as well.
+    if (inet_pton(PROTOCOL_FAMILY, cServerIP, &sAddress.sin_addr) <= INIT_0) { // Use the obtained server IP address instead of hardcoded IP
         perror("Invalid address/Address not supported");
         return FAILURE;
     }
