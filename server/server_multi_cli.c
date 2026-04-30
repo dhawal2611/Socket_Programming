@@ -1,13 +1,16 @@
 /**
- * @file        server.c
+ * @file        server_multi_cli.c
  * @brief       Socket server code
  * @details     Create a socket server and wait for a 
- *              client to connect to it.
+ *              client/'s to connect to it.
  * @author      Lad Dhawal Umesh
  * @developedBy Lad Dhawal Umesh
  * @date        2026-04-14
  * @version     1.0.0
  * @copyright   (c) 2026 Lad Dhawal Umesh. All rights reserved.
+ * Note: This code is an original implementation by Lad Dhawal Umesh. 
+ * Certain algorithms or logic patterns were adapted from publicly 
+ * available online resources.
  */
 
 // Include Header
